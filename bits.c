@@ -164,6 +164,7 @@ NOTES:
 int bitXor(int x, int y) {
   return ~(~x&~y)& ~(x& y);
 }
+
 //2
 /* 
  * fitsBits - return 1 if x can be represented as an 
@@ -180,6 +181,7 @@ int fitsBits(int x, int n) {
   int fits = x == moved;
   return fits;
 }
+
 //3
 /* 
  * rotateRight - Rotate x to the right by n
@@ -190,8 +192,14 @@ int fitsBits(int x, int n) {
  *   Rating: 3 
  */
 int rotateRight(int x, int n) {
-  return 2;
+   unsigned int ux = (unsigned int)x;
+   unsigned int mask = (1 << n) - 1;
+   unsigned int saved_bits = (mask & ux) << (32 - n);
+   unsigned int shifted_x = (ux >> n);
+   unsigned int final = saved_bits | shifted_x;
+   return (int)final;
 }
+
 //4
 /*
  * bitReverse - Reverse bits in a 32-bit word
@@ -202,5 +210,5 @@ int rotateRight(int x, int n) {
  *   Rating: 4
  */
 int bitReverse(int x) {
-    return 2;
+   return 2;
 }
