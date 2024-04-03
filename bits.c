@@ -178,7 +178,7 @@ int bitXor(int x, int y) {
 int fitsBits(int x, int n) {
   int shift = 32 + (~n + 1);
   int moved = (x << shift) >> shift;
-  int fits = x == moved;
+  int fits = !(x ^ moved);
   return fits;
 }
 
@@ -192,13 +192,21 @@ int fitsBits(int x, int n) {
  *   Rating: 3 
  */
 int rotateRight(int x, int n) {
-   unsigned int ux = (unsigned int)x;
-   unsigned int mask = (1 << n) - 1;
-   unsigned int saved_bits = (mask & ux) << (32 - n);
-   unsigned int shifted_x = (ux >> n);
-   unsigned int final = saved_bits | shifted_x;
-   return (int)final;
+   int left_shift_value = 32 + ~n + 1;
+   int save_bits_mask = ~(~0 << n);
+   int left = (x & save_bits_mask) << left_shift_value;
+   int upper_mask = ~0 << left_shift_value;
+   int right = (x >> n) & ~upper_mask;
+
+   int n_not_0 = !n + ~0;
+   int output = (n_not_0 & (left | right)) | (~n_not_0 & x);
+   return output;
 }
+
+//need a mask of both original and next
+//before shifting 01101110
+//make a mask of 1 and move it up by n - 1
+//take the integer and do an exclusive or with the integer on the right
 
 //4
 /*
@@ -210,10 +218,14 @@ int rotateRight(int x, int n) {
  *   Rating: 4
  */
 int bitReverse(int x) {
-   x = ((x & 0xAAAAAAAA) >> 1) | ((x & 0x55555555) << 1); //swap even and odd set of bits of length 1
-   x = ((x & 0xCCCCCCCC) >> 2) | ((x & 0x33333333) << 2); // swap even and odd set of bits of length 2
-   x = ((x & 0xF0F0F0F0) >> 4) | ((x & 0x0F0F0F0F) << 4); // swap even and odd set of bits of length 4
-   x = ((x & 0xFF00FF00) >> 8) | ((x & 0x00FF00FF) << 8); // swap even and odd set of bits of length 8
-   x = ((x & 0xFFFF0000) >> 16) | ((x & 0x0000FFFF) << 16); // swap even and odd set of bits of length 16
+   int first_half = x >> 16;
+   int second_half = x << 16;
+
+   
    return x;
+   //flip order
+   //mask off bottom 16 by making a constant and pushing over 0xFF
+   // 0xFF <<8 | 0xFF
+   // x = ((x & 0xFFFF) << 16) | (x  >> 16);
+   //use xor
 }
