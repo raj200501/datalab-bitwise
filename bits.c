@@ -162,7 +162,9 @@ NOTES:
  *   Rating: 1
  */
 int bitXor(int x, int y) {
-  return ~(~x&~y)& ~(x& y);
+
+  //ensures that X and Y don't both have 0s or 1s in corresponding bits
+  return ~(~x & ~y) & ~(x & y);
 }
 
 //2
@@ -176,10 +178,14 @@ int bitXor(int x, int y) {
  *   Rating: 2
  */
 int fitsBits(int x, int n) {
-  int shift = 32 + (~n + 1);
-  int moved = (x << shift) >> shift;
-  int fits = !(x ^ moved);
-  return fits;
+   
+   //eliminating the digits n spots left of x
+   int shift = 32 + (~n + 1);
+   int moved = (x << shift) >> shift;
+
+   //checking to see if x is still the same after shifting n bits to the right
+   int fits = !(x ^ moved);
+   return fits;
 }
 
 //3
@@ -192,12 +198,18 @@ int fitsBits(int x, int n) {
  *   Rating: 3 
  */
 int rotateRight(int x, int n) {
+
+   //saving the bits that will be cut off by a right shift
    int left_shift_value = 32 + ~n + 1;
    int save_bits_mask = ~(~0 << n);
    int left = (x & save_bits_mask) << left_shift_value;
+
+   //saving only the portion of x that will be on the right side that will not carry over to the left
    int upper_mask = ~0 << left_shift_value;
    int right = (x >> n) & ~upper_mask;
 
+
+   //using a mask to return a value based on whether n is 0 or not
    int n_not_0 = !n + ~0;
    int output = (n_not_0 & (left | right)) | (~n_not_0 & x);
    return output;
@@ -218,16 +230,20 @@ int rotateRight(int x, int n) {
  *   Rating: 4
  */
 int bitReverse(int x) {
-   int full_16bit_mask = 0xFF | (0xFF << 8);
-   int full_8bit_mask = 0xFF | (0xFF << 16);
+
+   //create custom masks to represent patterns of 1s of lengths 1, 2, and 4 for 16 bits 
    int mask_4bits = 0x0F | (0x0F << 8);
    int mask_2bits = 0x33 | (0x33 << 8);
    int mask_1bit = 0x55 | (0x55 << 8);
 
+   //create custom masks to represent patterns of 1s of lengths 1, 2, 4, 8, and 16 for 32 bits
+   int full_16bit_mask = 0xFF | (0xFF << 8);
+   int full_8bit_mask = 0xFF | (0xFF << 16);
    int full_4bit_mask = mask_4bits | mask_4bits << 16;
    int full_2bit_mask = mask_2bits | mask_2bits << 16;
    int full_1bit_mask = mask_1bit | mask_1bit << 16;
 
+   //top-down processing to reverse sequences of bits starting at size 16 bits and progressing down to size 1 bit
    x = ((x >> 16) & full_16bit_mask) | ((x & full_16bit_mask) << 16);
    x = ((x >> 8) & full_8bit_mask) | ((x & full_8bit_mask) << 8);
    x = ((x >> 4) & full_4bit_mask) | ((x & full_4bit_mask) << 4);
