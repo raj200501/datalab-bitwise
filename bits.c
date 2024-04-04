@@ -218,14 +218,22 @@ int rotateRight(int x, int n) {
  *   Rating: 4
  */
 int bitReverse(int x) {
-   int first_half = x >> 16;
-   int second_half = x << 16;
+   int full_16bit_mask = 0xFF | (0xFF << 8);
+   int full_8bit_mask = 0xFF | (0xFF << 16);
+   int mask_4bits = 0x0F | (0x0F << 8);
+   int mask_2bits = 0x33 | (0x33 << 8);
+   int mask_1bit = 0x55 | (0x55 << 8);
 
-   
+   int full_4bit_mask = mask_4bits | mask_4bits << 16;
+   int full_2bit_mask = mask_2bits | mask_2bits << 16;
+   int full_1bit_mask = mask_1bit | mask_1bit << 16;
+
+   x = ((x >> 16) & full_16bit_mask) | ((x & full_16bit_mask) << 16);
+   x = ((x >> 8) & full_8bit_mask) | ((x & full_8bit_mask) << 8);
+   x = ((x >> 4) & full_4bit_mask) | ((x & full_4bit_mask) << 4);
+   x = ((x >> 2) & full_2bit_mask) | ((x & full_2bit_mask) << 2);
+   x = ((x >> 1) & full_1bit_mask) | ((x & full_1bit_mask) << 1);
+
    return x;
-   //flip order
-   //mask off bottom 16 by making a constant and pushing over 0xFF
-   // 0xFF <<8 | 0xFF
-   // x = ((x & 0xFFFF) << 16) | (x  >> 16);
-   //use xor
 }
+
